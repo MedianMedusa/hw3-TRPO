@@ -66,13 +66,15 @@ user3 : user3
 root : root admin
 vagrant : vagrant
 ```
-3. В файле /etc/security/time.conf
+3. В файле `/etc/security/time.conf`
 Дописываем
+```
 ssh;*;!admin;Wk0000-2400
 ssh;*;admin;Al0000-2400
+```
 
 В файле `/etc/pam.d/sshd`
-Добавляем 
+добавляем 
 `account    required     pam_time.so`
 
 Настраиваем, чтобы ssh пускал:
