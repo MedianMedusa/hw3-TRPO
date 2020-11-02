@@ -78,9 +78,9 @@ ssh;*;admin;Al0000-2400
 `account    required     pam_time.so`
 
 Настраиваем, чтобы ssh пускал:
-В файле `/etc/ssh/sshd_config`
-Переключаем параметр `PasswordAuthentication` на `yes`
-И перезапускаем демона SSH: `service sshd restart`
+- В файле `/etc/ssh/sshd_config`
+переключаем параметр `PasswordAuthentication` на `yes`
+- Перезапускаем демона SSH: `service sshd restart`
 
 >Готово!
 
