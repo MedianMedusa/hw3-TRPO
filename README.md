@@ -71,14 +71,14 @@ vagrant : vagrant
 ssh;*;!admin;Wk0000-2400
 ssh;*;admin;Al0000-2400
 
-В файле /etc/pam.d/sshd
+В файле `/etc/pam.d/sshd`
 Добавляем 
-account    required     pam_time.so
+`account    required     pam_time.so`
 
 Настраиваем, чтобы ssh пускал:
-В файле /etc/ssh/sshd_config
-Переключаем параметр PasswordAuthentication на yes
-И перезапускаем демона ссх: service sshd restart
+В файле `/etc/ssh/sshd_config`
+Переключаем параметр `PasswordAuthentication` на `yes`
+И перезапускаем демона SSH: `service sshd restart`
 
 >Готово!
 
