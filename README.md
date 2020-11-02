@@ -16,7 +16,7 @@
 >>>- * возможность перезапускать демон docker (systemctl restart docker) не выдавая прав более, чем для этого нужно;
 
 ## Инструкция
-I.
+I. Первая часть
 1. Создаём пользователей
 
 По дефолту для новых пользователей установлены след значения: 
@@ -84,4 +84,52 @@ ssh;*;admin;Al0000-2400
 
 >Готово!
 
-//ToDo: сделать список праздников, с помощью скрипта проверять текущий день (date) на присутствие в файле. Запрещать, если праздник
+//ToDo: сделать список праздников, с помощью pam_script проверять текущий день (date) на присутствие в файле. Запрещать, если праздник
+
+II. Вторая часть
+1. Устанавливаем Docker по [инструкции](https://docs.docker.com/engine/install/centos/) (используя репозиторий)
+2. Запускаем демона `sudo systemctl start docker` и проверяем, что он работает:
+```
+[vagrant@localhost ~]$ sudo docker images
+REPOSITORY              TAG                 IMAGE ID            CREATED             SIZE
+```
+3. Добавляем пользователя в группу docker
+```
+[vagrant@localhost ~]$ sudo usermod -aG docker user3
+[vagrant@localhost ~]$ cat /etc/group | grep docker
+docker:x:989:vagrant,root,user3
+```
+И проверяем:
+```
+[vagrant@localhost ~]$ ssh user3@localhost
+user3@localhost's password:
+[user3@localhost ~]$ docker images
+REPOSITORY              TAG                 IMAGE ID            CREATED             SIZE
+```
+При этом у user2 ошибка:
+```
+[vagrant@localhost ~]$ ssh user2@localhost
+user2@localhost's password:
+[user2@localhost ~]$ docker images
+Got permission denied while trying to connect to the Docker daemon socket at unix:///var/run/docker.sock: Get http://%2Fvar%2Frun%2Fdocker.sock/v1.40/images/json: dial unix /var/run/docker.sock: connect: permission denied
+```
+4. Задание со звёздочкой:
+- Добавляем user3 в sudoers командой `sudo visudo -f /etc/sudoers` следующим образом:
+```
+#homework
+user3 ALL=(ALL) NOPASSWD: /usr/bin/systemctl restart docker
+```
+Теперь user3 может выполнять sudo restart docker без запроса пароля:
+```
+[user3@localhost ~]$ sudo systemctl restart docker
+[user3@localhost ~]$ sudo systemctl start docker
+
+We trust you have received the usual lecture from the local System
+Administrator. It usually boils down to these three things:
+
+    #1) Respect the privacy of others.
+    #2) Think before you type.
+    #3) With great power comes great responsibility.
+
+[sudo] password for user3:
+```
