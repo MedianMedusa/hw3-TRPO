@@ -1,0 +1,31 @@
+#!/bin/bash
+##
+##
+## Anikeev Georgiy
+## M3O-117M-20
+##
+## Script for pam to see if it is a holiday today
+##
+##
+## EXIT CODES:
+##  code 1 - it is a holiday
+##  code 0 - not a holiday
+##
+
+#get day and month:
+datee=`date +"%d %m"`
+
+#looking for a holiday in file "holidays"
+if [ "$PAM_USER" = "user3" ];
+then
+ if grep -q "$datee" /etc/holidays
+
+ #today is a holiday, restrict auth:
+ then exit 1
+
+  #not a holiday, grant access:
+ else exit 0
+ fi
+fi
+
+exit 0
