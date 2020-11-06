@@ -69,8 +69,8 @@ vagrant : vagrant
 3. В файле `/etc/security/time.conf`
 Дописываем
 ```
-ssh;*;!admin;Wk0000-2400
-ssh;*;admin;Al0000-2400
+sshd;*;!admin;Wk0000-2400
+sshd;*;admin;Al0000-2400
 ```
 
 В файле `/etc/pam.d/sshd`
@@ -84,7 +84,24 @@ ssh;*;admin;Al0000-2400
 
 >Готово!
 
-//ToDo: сделать список праздников, с помощью pam_script проверять текущий день (date) на присутствие в файле. Запрещать, если праздник
+4. Задание со звёздочкой
+- Устанавливаем pam_script из epel-release;
+- Добавляем в `/etc/pam.d/sshd` строку `account    required     pam_script.so `
+- В `/etc` удаляем существующий файл-ссылку `pam_script_acct` и создаём обычный файл с таким же именем, заполняем как у меня в репозитории
+- Тут же создаём файл `holidays` со списком праздников (копируем у меня же из репозитория)
+Пробуем:
+
+```
+[vagrant@localhost etc]$ ssh user3@localhost
+user3@localhost's password:
+Connection closed by ::1 port 22
+[vagrant@localhost etc]$
+[vagrant@localhost etc]$ ssh user2@localhost
+user2@localhost's password:
+Last login: Fri Nov  6 13:51:02 2020 from ::1
+[user2@localhost ~]$
+```
+>Готово!
 
 II. Вторая часть
 1. Устанавливаем Docker по [инструкции](https://docs.docker.com/engine/install/centos/) (используя репозиторий)
@@ -113,6 +130,7 @@ user2@localhost's password:
 [user2@localhost ~]$ docker images
 Got permission denied while trying to connect to the Docker daemon socket at unix:///var/run/docker.sock: Get http://%2Fvar%2Frun%2Fdocker.sock/v1.40/images/json: dial unix /var/run/docker.sock: connect: permission denied
 ```
+>Готово!
 4. Задание со звёздочкой:
 - Добавляем user3 в sudoers командой `sudo visudo -f /etc/sudoers` следующим образом:
 ```
@@ -133,3 +151,4 @@ Administrator. It usually boils down to these three things:
 
 [sudo] password for user3:
 ```
+>Готово!
