@@ -68,76 +68,76 @@ vagrant : vagrant
 ```
 3. Ограничиваем доступ по группам:
 
-        Настраиваем, чтобы ssh пускал:
+Настраиваем, чтобы ssh пускал:
 - В файле `/etc/ssh/sshd_config`
 переключаем параметр `PasswordAuthentication` на `yes`
 - Перезапускаем демона SSH: `service sshd restart`
 
 <details><summary>Неправильное решение</summary>
 
-        В файле `/etc/security/time.conf`
-        Дописываем
-        ```
-        sshd;*;!admin;Wk0000-2400
-        sshd;*;admin;Al0000-2400
-        ```
+В файле `/etc/security/time.conf`
+Дописываем
+```
+sshd;*;!admin;Wk0000-2400
+sshd;*;admin;Al0000-2400
+```
 
-        В файле `/etc/pam.d/sshd`
-        добавляем 
-        `account    required     pam_time.so`
+В файле `/etc/pam.d/sshd`
+добавляем 
+`account    required     pam_time.so`
 
 </details>
 
 <details><summary>Правильное решение</summary>
 
-        - Устанавливаем pam_script из epel-release;
-        - Добавляем в `/etc/pam.d/sshd` строку `account    required     pam_script.so `
-        - В `/etc` удаляем существующий файл-ссылку `pam_script_acct` и создаём обычный файл с таким же именем, пишем в нём:
-            ```
-            #!bin/bash
-            script="$1"
-            shift
+- Устанавливаем pam_script из epel-release;
+- Добавляем в `/etc/pam.d/sshd` строку `account    required     pam_script.so `
+- В `/etc` удаляем существующий файл-ссылку `pam_script_acct` и создаём обычный файл с таким же именем, пишем в нём:
+```
+#!bin/bash
+script="$1"
+shift
 
-            # if the user is in admin group                                                                
-            if groups $PAM_USER | grep admin > /dev/null
-            then
-                    exit 0
-            
-            # if not admin
-            else
-                    # before saturday  
-                    if [[ $(date +%u) -lt 6 ]] 
-                    then
-                            exit 0
-                    
-                    # weekends            
-                    else
-                            exit 1
-                    fi
-            fi
+# if the user is in admin group                                                                
+if groups $PAM_USER | grep admin > /dev/null
+then
+    exit 0
 
-            # search for file
-            if [ ! -e "$script" ]    
-            then
-                    exit 0
-            fi
-            ```
-            Пробуем:
-            ```
-            [vagrant@localhost etc]$ ssh user1@localhost
-            user1@localhost's password:
-            Last failed login: Sun Dec 27 12:58:25 UTC 2020 from ::1 on ssh:notty
-            There was 1 failed login attempt since the last successful login.
-            Last login: Sun Dec 27 12:41:03 2020 from ::1
-            
-            [user1@localhost ~]$ exit
-            logout
-            Connection to localhost closed.
-            
-            [vagrant@localhost etc]$ ssh user3@localhost
-            user3@localhost's password:
-            Connection closed by ::1 port 22
-            ```
+# if not admin
+else
+    # before saturday  
+    if [[ $(date +%u) -lt 6 ]] 
+    then
+            exit 0
+
+    # weekends            
+    else
+            exit 1
+    fi
+fi
+
+# search for file
+if [ ! -e "$script" ]    
+then
+    exit 0
+fi
+```
+Пробуем:
+```
+[vagrant@localhost etc]$ ssh user1@localhost
+user1@localhost's password:
+Last failed login: Sun Dec 27 12:58:25 UTC 2020 from ::1 on ssh:notty
+There was 1 failed login attempt since the last successful login.
+Last login: Sun Dec 27 12:41:03 2020 from ::1
+
+[user1@localhost ~]$ exit
+logout
+Connection to localhost closed.
+
+[vagrant@localhost etc]$ ssh user3@localhost
+user3@localhost's password:
+Connection closed by ::1 port 22
+```
         
 </details>
 
